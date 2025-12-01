@@ -1,0 +1,19 @@
+<tr id="domain-row-{{ d.id }}" data-inprogress="{{ d.is_check_in_progress|yesno:'true,false' }}">
+  <td class="p-2">{{ d.domain_name }}</td>
+  <td class="p-2">{% if d.expiry_date %}{{ d.expiry_date|date:"Y-m-d H:i" }}{% else %}N/A{% endif %}</td>
+  <td class="p-2">
+    <span class="px-2 py-1 rounded {% if d.certificate_grade == 'A' %}bg-green-100{% elif d.certificate_grade == 'B' %}bg-yellow-100{% else %}bg-red-100{% endif %}">
+      {{ d.certificate_grade }}
+    </span>
+  </td>
+  <td class="p-2">
+    {% if d.is_check_in_progress %}
+      <span class="inline-flex items-center"><svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/></svg> Checking...</span>
+    {% else %}
+      {{ d.check_status_message }}
+    {% endif %}
+  </td>
+  <td class="p-2">
+    <button class="check-now-btn bg-blue-600 text-white px-3 py-1 rounded" data-domain-id="{{ d.id }}">Check Now</button>
+  </td>
+</tr>

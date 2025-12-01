@@ -1,0 +1,10 @@
+Django>=4.2
+djangorestframework
+psycopg2-binary
+celery[redis]>=5.2
+redis
+cryptography
+requests
+gunicorn
+python-dotenv
+django-celery-beat

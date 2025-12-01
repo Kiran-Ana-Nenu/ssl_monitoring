@@ -5,4 +5,4 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app/
-CMD ["gunicorn", "ssl_monitor.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "ssl_monitor.wsgi:application", "--bind", "0.0.0.0:9000"]

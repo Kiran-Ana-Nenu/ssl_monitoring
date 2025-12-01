@@ -12,7 +12,7 @@ services:
     image: redis:7
   web:
     build: .
-    command: bash -c "python manage.py migrate --noinput && gunicorn ssl_monitor.wsgi:application --bind 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate --noinput && gunicorn ssl_monitor.wsgi:application --bind 0.0.0.0:9000"
     volumes:
       - .:/app
     ports:

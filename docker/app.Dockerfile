@@ -9,4 +9,4 @@ WORKDIR /app/src
 ENV PYTHONPATH=/app/src
 ENV DJANGO_SETTINGS_MODULE=ssl_monitor.settings
 ENTRYPOINT ["/app/web_entrypoint.sh"]
-CMD ["gunicorn", "ssl_monitor.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "ssl_monitor.wsgi:application", "--bind", "0.0.0.0:9000"]

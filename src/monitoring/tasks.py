@@ -5,7 +5,7 @@ from cryptography.hazmat.backends import default_backend
 from celery import shared_task
 from django.utils import timezone as dj_tz
 from .models import UserDomain, CertificateCheckResult
-from notifications.services import notify_critical_if_needed
+from notifications.tasks import send_email_alert
 GRADE_RULES = [
     ('A', lambda days: days > 90),
     ('B', lambda days: 31 <= days <= 90),
@@ -23,7 +23,7 @@ def fetch_cert(hostname: str, port: int = 443, timeout: int = 10):
             der_cert = ssock.getpeercert(binary_form=True)
             cert = x509.load_der_x509_certificate(der_cert, default_backend())
             return cert
-@shared_task(bind=True, acks_late=True)
+@shared_task(bind=True, acks_late=True, queue='default')
 def check_domain_certificate(self, domain_id: int):
     try:
         domain = UserDomain.objects.get(pk=domain_id)
@@ -54,7 +54,8 @@ def check_domain_certificate(self, domain_id: int):
             is_successful=True,
             raw_message=f"Issuer: {cert.issuer.rfc4514_string()}"
         )
-        notify_critical_if_needed(domain, days_remaining, grade)
+        if grade == 'F' or days_remaining <= 30:
+            send_email_alert.delay(domain.user.id, domain.domain_name, days_remaining)
         return {'status':'ok','domain':domain.domain_name,'days_remaining':days_remaining,'grade':grade}
     except Exception as exc:
         domain.last_check_date = dj_tz.now()
@@ -70,7 +71,7 @@ def check_domain_certificate(self, domain_id: int):
             raw_message=str(exc)
         )
         return {'status':'error','error':str(exc),'domain':domain.domain_name}
-@shared_task
+@shared_task(queue='default')
 def bulk_check_all_domains():
     from .models import UserDomain
     domains = UserDomain.objects.all().values_list('id', flat=True)

@@ -1,7 +1,8 @@
 Django>=4.2
 djangorestframework
 psycopg2-binary
-celery[redis]>=5.2
+celery>=5.2
+pika
 redis
 cryptography
 requests

@@ -66,11 +66,14 @@
 # =======================
 # 1) BUILDER STAGE
 # =======================
+###############################
+# 1) BUILDER STAGE
+###############################
 FROM debian:bookworm-slim AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Python + build deps
+# Install Python + build dependencies
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         python3 python3-pip python3-venv python3-dev \
@@ -79,13 +82,14 @@ RUN apt-get update && apt-get upgrade -y && \
 
 WORKDIR /app
 
+# Copy and build wheels
 COPY requirements.txt .
 RUN pip3 wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
 
 
-# =======================
-# 2) FINAL RUNTIME STAGE
-# =======================
+###############################
+# 2) RUNTIME STAGE
+###############################
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -94,46 +98,22 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 WORKDIR /app
 
-# Install Python + runtime libs only
+# Install Python + runtime dependencies only (no compiler)
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         python3 python3-pip \
         libpq5 curl netcat-openbsd && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Python packages from wheels
+# Install dependencies from built wheels
 COPY --from=builder /wheels /wheels
 RUN pip3 install --no-cache /wheels/*
-
-# Copy project source code
-COPY . .
-
-# Django static collection
-RUN python3 src/manage.py collectstatic --noinput
-
-EXPOSE 8000
-
-ENTRYPOINT ["sh", "-c"]
-=1 \
-    PYTHONDONTWRITEBYTECODE=1
-
-WORKDIR /app
-
-# Update + install only minimal runtime dependencies
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-        libpq5 curl netcat-openbsd && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install dependencies from wheels
-COPY --from=builder /wheels /wheels
-RUN pip install --no-cache /wheels/*
 
 # Copy project source
 COPY . .
 
-# Collect static files (Django)
-RUN python src/manage.py collectstatic --noinput
+# Django static files
+RUN python3 src/manage.py collectstatic --noinput
 
 EXPOSE 8000
 

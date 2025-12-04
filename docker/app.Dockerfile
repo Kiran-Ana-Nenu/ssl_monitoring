@@ -60,12 +60,6 @@
 # # Default entrypoint: shell command to allow scripts
 # ENTRYPOINT ["sh", "-c"]
 
-# =======================
-# 1) BUILDER STAGE
-# =======================
-# =======================
-# 1) BUILDER STAGE
-# =======================
 ###############################
 # 1) BUILDER STAGE
 ###############################
@@ -107,7 +101,7 @@ RUN apt-get update && apt-get upgrade -y && \
 
 # Install dependencies from built wheels
 COPY --from=builder /wheels /wheels
-RUN pip3 install --no-cache /wheels/*
+RUN pip3 install --no-cache --break-system-packages /wheels/*
 
 # Copy project source
 COPY . .

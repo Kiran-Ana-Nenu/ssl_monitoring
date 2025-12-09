@@ -28,7 +28,7 @@ tr:hover { background: #e2e8f0; }
 <h2>Report Info</h2>
 <p><b>Generated On:</b> {{ getenv "TRIVY_TS" }}</p>
 <p><b>Build Number:</b> {{ getenv "TRIVY_BUILD_NUMBER" }}</p>
-<p><b>Scanned Images:</b> {{ getenv "TRIVY_IMAGES" }}</p>
+<p><b>Scanned Image:</b> {{ getenv "TRIVY_IMAGE" }}</p>
 </div>
 
 <h1>🔐 Trivy Consolidated Vulnerability Scan</h1>

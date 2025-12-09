@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Trivy Scan Report - Build {{ .BuildNumber }}</title>
-    <h2>🔐 Trivy Vulnerability Scan Report</h2>
-    <p>Timestamp: {{ .Timestamp }}</p>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f6fa; }
         h1, h2, h3 { color: #2d3748; }
@@ -27,7 +25,7 @@
 <body>
 
 <h1>🔐 Trivy Vulnerability Scan Report</h1>
-<h2>Build: {{ .BuildNumber }} | Timestamp: {{ .Timestamp }}</h2>
+<h2></h2> <!-- Build number & timestamp injected via sed -->
 
 {{/* ===== Initialize counters ===== */}}
 {{ $crit := 0 }} {{ $high := 0 }} {{ $med := 0 }} {{ $low := 0 }} {{ $unk := 0 }}
@@ -69,10 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
       type: "pie",
       data: {
         labels: data.labels,
-        datasets: [{
-          data: data.values,
-          backgroundColor: ["#ff4d4f", "#ff9800", "#ffc107", "#03a9f4", "#9e9e9e"]
-        }]
+        datasets: [{ data: data.values, backgroundColor: ["#ff4d4f", "#ff9800", "#ffc107", "#03a9f4", "#9e9e9e"] }]
       }
     });
 
@@ -80,16 +75,9 @@ document.addEventListener("DOMContentLoaded", function() {
       type: "bar",
       data: {
         labels: data.labels,
-        datasets: [{
-          label: "Count",
-          data: data.values,
-          backgroundColor: ["#ff4d4f", "#ff9800", "#ffc107", "#03a9f4", "#9e9e9e"]
-        }]
+        datasets: [{ label: "Count", data: data.values, backgroundColor: ["#ff4d4f", "#ff9800", "#ffc107", "#03a9f4", "#9e9e9e"] }]
       },
-      options: {
-        plugins: { legend: { display: false }},
-        scales: { y: { beginAtZero: true } }
-      }
+      options: { plugins: { legend: { display: false }}, scales: { y: { beginAtZero: true } } }
     });
 });
 </script>
@@ -99,37 +87,36 @@ document.addEventListener("DOMContentLoaded", function() {
 {{ range . }}
 <h3>🧱 Target: {{ .Target }}</h3>
 {{ if .Vulnerabilities }}
-    {{ $sorted := sort .Vulnerabilities "Severity" "desc" }}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Severity</th>
-            <th>Package</th>
-            <th>Installed Version</th>
-            <th>Fixed Version</th>
-            <th>URL</th>
-        </tr>
-        {{ range $sorted }}
-        <tr>
-            <td>{{ .VulnerabilityID }}</td>
-            <td>{{ .Title }}</td>
-            <td>
-                {{ if eq .Severity "CRITICAL" }}<span class="sev-critical">CRITICAL</span>{{ end }}
-                {{ if eq .Severity "HIGH" }}<span class="sev-high">HIGH</span>{{ end }}
-                {{ if eq .Severity "MEDIUM" }}<span class="sev-medium">MEDIUM</span>{{ end }}
-                {{ if eq .Severity "LOW" }}<span class="sev-low">LOW</span>{{ end }}
-                {{ if eq .Severity "UNKNOWN" }}<span class="sev-unknown">UNKNOWN</span>{{ end }}
-            </td>
-            <td>{{ .PkgName }}</td>
-            <td>{{ .InstalledVersion }}</td>
-            <td>{{ .FixedVersion }}</td>
-            <td><a href="{{ .PrimaryURL }}" target="_blank">Link</a></td>
-        </tr>
-        {{ end }}
-    </table>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Severity</th>
+        <th>Package</th>
+        <th>Installed Version</th>
+        <th>Fixed Version</th>
+        <th>URL</th>
+    </tr>
+    {{ range .Vulnerabilities }}
+    <tr>
+        <td>{{ .VulnerabilityID }}</td>
+        <td>{{ .Title }}</td>
+        <td>
+            {{ if eq .Severity "CRITICAL" }}<span class="sev-critical">CRITICAL</span>{{ end }}
+            {{ if eq .Severity "HIGH" }}<span class="sev-high">HIGH</span>{{ end }}
+            {{ if eq .Severity "MEDIUM" }}<span class="sev-medium">MEDIUM</span>{{ end }}
+            {{ if eq .Severity "LOW" }}<span class="sev-low">LOW</span>{{ end }}
+            {{ if eq .Severity "UNKNOWN" }}<span class="sev-unknown">UNKNOWN</span>{{ end }}
+        </td>
+        <td>{{ .PkgName }}</td>
+        <td>{{ .InstalledVersion }}</td>
+        <td>{{ .FixedVersion }}</td>
+        <td><a href="{{ .PrimaryURL }}" target="_blank">Link</a></td>
+    </tr>
+    {{ end }}
+</table>
 {{ else }}
-    <p style="color:green; font-size: 16px;"><b>✔ No vulnerabilities found</b></p>
+<p style="color:green; font-size: 16px;"><b>✔ No vulnerabilities found</b></p>
 {{ end }}
 {{ end }}
 

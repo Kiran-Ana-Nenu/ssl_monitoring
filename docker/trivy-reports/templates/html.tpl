@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Trivy Scan Report - Build {{ .BuildNumber }}</title>
-    <h2>🔐 Trivy Vulnerability Scan Report</h2>
-    <p>Timestamp: {{ .Timestamp }}</p>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f6fa; }
         h1, h2, h3 { color: #2d3748; }

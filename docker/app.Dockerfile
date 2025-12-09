@@ -107,7 +107,7 @@ RUN pip3 install --no-cache --break-system-packages /wheels/*
 COPY . .
 
 # Django static files
-RUN python3 src/manage.py collectstatic --noinput
+RUN python3 appcode/src/manage.py collectstatic --noinput
 
 EXPOSE 8000
 

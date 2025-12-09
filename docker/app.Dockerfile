@@ -77,7 +77,7 @@ RUN apt-get update && apt-get upgrade -y && \
 WORKDIR /app
 
 # Copy and build wheels
-COPY requirements.txt .
+COPY appcode/requirements.txt .
 RUN pip3 wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
 
 

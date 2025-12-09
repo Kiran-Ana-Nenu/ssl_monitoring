@@ -2,13 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Trivy Scan Report</title>
+<title>Trivy Vulnerability Scan Report</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; background: #f5f6fa; }
-h1, h2, h3 { color: #2d3748; }
-h2 { margin-top: 0; }
+h1,h2,h3 { color: #2d3748; }
 table { border-collapse: collapse; width: 100%; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-th, td { padding: 10px 14px; border: 1px solid #bbb; font-size: 14px; text-align: left; }
+th,td { padding: 10px 14px; border: 1px solid #bbb; font-size: 14px; text-align: left; }
 th { background: #2d3748; color: white; text-transform: uppercase; }
 tr:nth-child(even) { background: #f6f8fa; }
 tr:hover { background: #e2e8f0; }
@@ -20,13 +19,21 @@ tr:hover { background: #e2e8f0; }
 .summary-box { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-left: 6px solid #2d3748; }
 .summary-item { font-size: 16px; font-weight: 600; line-height: 1.4; }
 .chart-container { width: 100%; max-width: 850px; margin: 35px auto; }
+.report-info { margin-bottom: 25px; padding: 15px; background: #eef2f7; border-left: 6px solid #2d3748; }
 </style>
 </head>
 <body>
 
-<h1>🔐 Trivy Vulnerability Scan Report</h1>
-<h2></h2> <!-- Build number & timestamp inserted by sed -->
+<div class="report-info">
+<h2>Report Info</h2>
+<p><b>Generated On:</b> {{ getenv "TRIVY_TS" }}</p>
+<p><b>Build Number:</b> {{ getenv "TRIVY_BUILD_NUMBER" }}</p>
+<p><b>Scanned Images:</b> {{ getenv "TRIVY_IMAGES" }}</p>
+</div>
 
+<h1>🔐 Trivy Consolidated Vulnerability Scan</h1>
+
+{{/* ===== Summary counters ===== */}}
 {{ $crit := 0 }} {{ $high := 0 }} {{ $med := 0 }} {{ $low := 0 }} {{ $unk := 0 }}
 {{ range . }}
   {{ range .Vulnerabilities }}
@@ -59,6 +66,30 @@ new Chart(document.getElementById("barChart"),{ type:"bar", data:{ labels:data.l
 </script>
 
 <hr/>
+
+<h3>Top Critical & High Vulnerabilities</h3>
+<table>
+<tr><th>ID</th><th>Severity</th><th>Title</th><th>Package</th><th>Installed Version</th><th>Fixed Version</th><th>Target</th></tr>
+{{ range . }}
+  {{ range .Vulnerabilities }}
+    {{ if or (eq .Severity "CRITICAL") (eq .Severity "HIGH") }}
+    <tr>
+    <td>{{ .VulnerabilityID }}</td>
+    <td>{{ .Severity }}</td>
+    <td>{{ .Title }}</td>
+    <td>{{ .PkgName }}</td>
+    <td>{{ .InstalledVersion }}</td>
+    <td>{{ .FixedVersion }}</td>
+    <td>{{ $.Target }}</td>
+    </tr>
+    {{ end }}
+  {{ end }}
+{{ end }}
+</table>
+
+<hr/>
+
+{{/* Full table per target */}}
 {{ range . }}
 <h3>🧱 Target: {{ .Target }}</h3>
 {{ if .Vulnerabilities }}

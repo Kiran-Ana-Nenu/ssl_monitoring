@@ -7,7 +7,7 @@ RUN apk update && apk upgrade --no-cache
 RUN adduser -D -H -u 1000 nginxuser
 
 # Copy custom nginx config
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY appcode/docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Copy static files
 COPY appcode/docker/staticfiles/ /var/www/static

@@ -10,7 +10,7 @@ RUN adduser -D -H -u 1000 nginxuser
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Copy static files
-COPY docker/staticfiles/ /var/www/static
+COPY appcode/docker/staticfiles/ /var/www/static
 
 
 RUN mkdir -p /var/run/nginx \    && chown -R nginx:nginx /var/run/nginx

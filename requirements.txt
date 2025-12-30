@@ -9,3 +9,4 @@ requests
 gunicorn
 python-dotenv
 django-celery-beat
+mongo
